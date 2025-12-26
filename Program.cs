@@ -1,5 +1,8 @@
 using BookStoreRest.Controllers;
+using BookStoreRest.Models;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Security.Cryptography.X509Certificates;
 
@@ -12,12 +15,48 @@ namespace BookStoreRest
             builder.Services.AddControllers();
             var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
 
-            // Добавление контекста базы данных с PostgreSQL
             builder.Services.AddDbContext<DatabaseContext>(options =>
                 options.UseNpgsql(connectionString));
+            builder.Services.AddAuthentication(options => {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options => {
+                options.TokenValidationParameters = new TokenValidationParameters {
+                    ValidateIssuer = true,
+                    ValidIssuer = AuthOptions.ISSUER,
+                    ValidateAudience = true,
+                    ValidAudience = AuthOptions.AUDIENCE,
+                    ValidateLifetime = true,
+                    IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+                    ValidateIssuerSigningKey = true,
+                };
+                options.Events = new JwtBearerEvents {
+                    OnMessageReceived = context =>
+                    {
+
+                        var token = context.Request.Cookies["AuthToken"];
+
+                        if (string.IsNullOrEmpty(token) && context.Request.Headers.ContainsKey("Authorization")) {
+                            token = context.Request.Headers["Authorization"]
+                                .ToString()
+                                .Replace("Bearer ", "");
+                        }
+
+                        if (!string.IsNullOrEmpty(token))
+                            context.Token = token;
+
+                        return Task.CompletedTask;
+                    }
+                };
+            });
             var app = builder.Build();
 
             app.UseRouting();
+
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.MapControllers();
             app.Run();
         }

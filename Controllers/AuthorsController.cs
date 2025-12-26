@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using BookStoreRest.Models;
 using System;
 namespace BookStoreRest.Controllers
@@ -21,6 +22,7 @@ namespace BookStoreRest.Controllers
 
             return author == null ? NotFound(): author;
         }
+        [Authorize]
         [HttpPost]
         public ActionResult<Author> CreateAuthor(Author author) {
             author.BirthDate = DateTime.SpecifyKind(author.BirthDate, DateTimeKind.Utc);
@@ -28,6 +30,7 @@ namespace BookStoreRest.Controllers
             _context.SaveChanges();
             return Created();
         }
+        [Authorize]
         [HttpPut("{id}")]
         public ActionResult<Author> UpdateAuthor(int id, Author newAuthor) {
             Author? author = _context.Authors.Find(id);
@@ -37,21 +40,10 @@ namespace BookStoreRest.Controllers
 
             author.FirstName = newAuthor.FirstName;
             author.SecondName = newAuthor.SecondName;
-            author.Nationality = newAuthor.Nationality;
             author.BirthDate = newAuthor.BirthDate;
 
             _context.SaveChanges();
             return author;
-        }
-        [HttpDelete("{id}")]
-        public ActionResult<Author> DeleteAuthor(int id) {
-            Author? author = _context.Authors.Find(id);
-            if (author == null) {
-                return NotFound();
-            }
-            _context.Authors.Remove(author);
-            _context.SaveChanges();
-            return NoContent();
         }
     }
 }
