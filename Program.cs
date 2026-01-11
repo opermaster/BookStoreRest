@@ -14,7 +14,16 @@ namespace BookStoreRest
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddControllers();
             var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
-
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowFrontend",
+                    policy => {
+                        policy
+                            .WithOrigins("http://127.0.0.1:5500", "http://localhost:5500")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
             builder.Services.AddDbContext<DatabaseContext>(options =>
                 options.UseNpgsql(connectionString));
             builder.Services.AddAuthentication(options => {
@@ -53,7 +62,7 @@ namespace BookStoreRest
             var app = builder.Build();
 
             app.UseRouting();
-
+            app.UseCors("AllowFrontend");
             app.UseAuthentication();
             app.UseAuthorization();
 

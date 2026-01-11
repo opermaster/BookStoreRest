@@ -46,12 +46,13 @@ namespace BookStoreRest.Controllers
                     signingCredentials: new SigningCredentials(AuthOptions.GetSymmetricSecurityKey(), SecurityAlgorithms.HmacSha256));
             string token = new JwtSecurityTokenHandler().WriteToken(jwt);
             return Ok(new { Token = token });
-        }
+        }   
         [Authorize]
         [HttpGet("me")]
-        public IActionResult Me() { 
+        public IActionResult Me() {
             return Ok(new {
-                username = User.Identity?.Name
+                username = User.Identity?.Name,
+                userid = User.FindFirst(ClaimTypes.NameIdentifier)?.Value,
             });
         }
     }

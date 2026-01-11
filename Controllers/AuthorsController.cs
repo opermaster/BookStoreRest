@@ -24,9 +24,9 @@ namespace BookStoreRest.Controllers
         }
         [Authorize]
         [HttpPost]
-        public ActionResult<Author> CreateAuthor(Author author) {
+        public ActionResult<Author> CreateAuthor(AuthorDto author) {
             author.BirthDate = DateTime.SpecifyKind(author.BirthDate, DateTimeKind.Utc);
-            _context.Authors.Add(author);
+            _context.Authors.Add(AuthorDto.DtoToAuthor(author));
             _context.SaveChanges();
             return Created();
         }

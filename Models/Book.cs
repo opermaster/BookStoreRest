@@ -5,6 +5,7 @@
         public int Id { get; set; }
         public string Title { get; set; } = null!;
         public string Synapsis { get; set; } = null!;
+        public string Img { get; set; } = null!;
         public DateTime PublishDate { get; set; }
 
         public decimal Cost { get; set; }
