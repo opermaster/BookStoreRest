@@ -43,9 +43,7 @@ namespace BookStoreRest
                 options.Events = new JwtBearerEvents {
                     OnMessageReceived = context =>
                     {
-
-                        var token = context.Request.Cookies["AuthToken"];
-
+                        string? token = null;
                         if (string.IsNullOrEmpty(token) && context.Request.Headers.ContainsKey("Authorization")) {
                             token = context.Request.Headers["Authorization"]
                                 .ToString()
