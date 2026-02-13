@@ -12,18 +12,18 @@ namespace BookStoreRest.Controllers
         public AuthorsController(DatabaseContext context) {
             _context = context;
         }
-        [HttpGet]
+        [HttpGet("all-authors")]
         public ActionResult<List<Author>> GetAuthors() {
             return _context.Authors.ToList();
         }
-        [HttpGet("{id}")]
+        [HttpGet("by-authorid/{id}")]
         public ActionResult<Author> GetAuthor(int id) {
             Author? author = _context.Authors.Find(id);
 
             return author == null ? NotFound(): author;
         }
         [Authorize]
-        [HttpPost]
+        [HttpPost("new-author")]
         public ActionResult<Author> CreateAuthor(AuthorDto author) {
             author.BirthDate = DateTime.SpecifyKind(author.BirthDate, DateTimeKind.Utc);
             _context.Authors.Add(AuthorDto.DtoToAuthor(author));
@@ -31,7 +31,7 @@ namespace BookStoreRest.Controllers
             return Created();
         }
         [Authorize]
-        [HttpPut("{id}")]
+        [HttpPut("by-authorid/{id}")]
         public ActionResult<Author> UpdateAuthor(int id, Author newAuthor) {
             Author? author = _context.Authors.Find(id);
             if (author == null || newAuthor.Id != id) {

@@ -3,8 +3,6 @@ using BookStoreRest.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Security.Cryptography.X509Certificates;
 
 namespace BookStoreRest
 {
@@ -12,6 +10,8 @@ namespace BookStoreRest
     {
         public static void Main(string[] args) {
             var builder = WebApplication.CreateBuilder(args);
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
             builder.Services.AddControllers();
             var connectionString = builder.Configuration.GetConnectionString("PostgresConnection");
             builder.Services.AddCors(options =>
@@ -24,6 +24,7 @@ namespace BookStoreRest
                             .AllowAnyMethod();
                     });
             });
+
             builder.Services.AddDbContext<DatabaseContext>(options =>
                 options.UseNpgsql(connectionString));
             builder.Services.AddAuthentication(options => {
@@ -58,6 +59,10 @@ namespace BookStoreRest
                 };
             });
             var app = builder.Build();
+            if (app.Environment.IsDevelopment()) {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
 
             app.UseRouting();
             app.UseCors("AllowFrontend");

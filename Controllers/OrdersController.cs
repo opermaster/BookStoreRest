@@ -69,7 +69,7 @@
             return Ok(orders);
         }
         [Authorize]
-        [HttpPost]
+        [HttpPost("new-order")]
         public ActionResult CreateOrder(OrderDto dto) {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
@@ -96,7 +96,7 @@
         }
 
         [Authorize]
-        [HttpPut("{id}")]
+        [HttpPut("by-orderid/{id}")]
         public ActionResult<Order> UpdateOrder(int id, OrderDto dto) {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 
@@ -115,7 +115,7 @@
         }
 
         [Authorize]
-        [HttpDelete("{id}")]
+        [HttpDelete("by-orderid/{id}")]
         public ActionResult DeleteOrder(int id) {
             int userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier)!.Value);
 

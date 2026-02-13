@@ -13,7 +13,7 @@ namespace BookStoreRest.Controllers
         public BooksController(DatabaseContext context) {
             _context = context;
         }
-        [HttpGet]
+        [HttpGet("all-books")]
         public ActionResult<List<BookDto>> GetBooks() {
             var books = _context.Books
                 .Include(b => b.Author)
@@ -53,7 +53,7 @@ namespace BookStoreRest.Controllers
                 .ToList();
             return books;
         }
-        [HttpGet("{id}")]
+        [HttpGet("by-bookid/{id}")]
         public ActionResult<Book> GetBookById(int id) {
             Book? book = _context.Books.Find(id);
             return book == null? NotFound() : book;
@@ -89,7 +89,7 @@ namespace BookStoreRest.Controllers
             return book == null ? NotFound() : Ok(book);
         }
         [Authorize]
-        [HttpPost]
+        [HttpPost("new-book")]
         public ActionResult CreateBook(BookDto _book) {
             Book book = BookDto.DtoToBook(_book);
             var userId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -99,7 +99,7 @@ namespace BookStoreRest.Controllers
             return Ok();
         }
         [Authorize]
-        [HttpPut("{id}")]
+        [HttpPut("by-bookid/{id}")]
         public ActionResult<Book> UpdateBook(int id ,BookDto newBook) {
             Book? book = _context.Books.Find(id);
             if(book == null || newBook.Id != id) {
@@ -118,7 +118,7 @@ namespace BookStoreRest.Controllers
             return book;
         }
         [Authorize]
-        [HttpDelete("{id}")]
+        [HttpDelete("by-bookid/{id}")]
         public ActionResult DeleteBook(int id) {
             Book? book = _context.Books.Find(id);
             var userId = int.Parse(User.FindFirst("id").Value);
